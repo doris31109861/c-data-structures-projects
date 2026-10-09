@@ -29,6 +29,8 @@ cd os-fork-collatz && gcc collatz.c -o collatz && ./collatz # Linux
 
 > `terminal-dino-game` 使用 `<windows.h>`／`<conio.h>`，只能在 Windows 執行。
 
+其餘作業可在 Linux / Windows 編譯；每次 push 會由 GitHub Actions 在 Linux 上編譯執行，`sell` 另以 Valgrind 檢查記憶體洩漏（`.github/workflows/build.yml`）。
+
 ### 學到的東西
 
 - 依需求選擇資料結構（BST 查詢、Heap 排序、佇列模擬）

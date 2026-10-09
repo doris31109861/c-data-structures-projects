@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 typedef struct seller
 {
@@ -24,6 +25,17 @@ typedef struct commodity
     struct commodity *rchild;
 }commodity;
 
+/* 不分大小寫比較兩個字串（回傳值意義同 strcmp）。
+ * 原本用的 strcmpi 只有 Windows 的 C 函式庫有，Linux 上編不過，所以自己實作。 */
+static int str_icmp(const char *a, const char *b) {
+    while (*a && tolower((unsigned char)*a) == tolower((unsigned char)*b)) {
+        a++;
+        b++;
+    }
+    return tolower((unsigned char)*a) - tolower((unsigned char)*b);
+}
+
+void free_tree(commodity *tree);
 int heightBST(commodity* tree);
 commodity* deleteBST(commodity** tree ,char name[]);
 int heapsort(seller *heap, int i ,int num);
@@ -45,8 +57,8 @@ int buywa = 0;
 int node = 0;
 
 int main() {
-    char open[10];
-    scanf("%s",open);
+    char open[256];  // 輸入檔名（原本只有 10 格，檔名稍長就會溢位）
+    scanf("%255s",open);  // 限制讀入長度，避免超出陣列
     fpin = fopen(open, "r");
     fbuy = fopen("BuyTable.txt", "w");
     flog = fopen("LogTable.txt", "w");
@@ -89,6 +101,23 @@ int main() {
         }
 
     }
+    // 結束前釋放所有節點並關閉檔案（原本完全沒有 free / fclose）
+    free_tree(tree);
+    fclose(fpin);
+    fclose(fbuy);
+    fclose(flog);
+    fclose(fsearch);
+    fclose(fsort);
+    return 0;
+}
+
+/* 後序走訪釋放整棵 BST：先釋放左右子樹，再釋放自己的賣家陣列與節點 */
+void free_tree(commodity *tree) {
+    if (tree == NULL) return;
+    free_tree(tree->lchild);
+    free_tree(tree->rchild);
+    free(tree->owner);
+    free(tree);
 }
 
 void insert(commodity** root,char name[],char ID[],int price) {
@@ -106,7 +135,7 @@ void insert(commodity** root,char name[],char ID[],int price) {
         (*root)->owner[0].price = price;
         //printf("%s %d %s %d\n",(*root)->name,(*root)->owner_num,(*root)->owner[0].ID,(*root)->owner[0].price);
     }else{
-        if(strcmpi((*root)->name,name)==0){
+        if(str_icmp((*root)->name,name)==0){
             //printf("find\n");
             (*root)->owner_num++;
             int n = (*root)->owner_num;
@@ -123,7 +152,7 @@ void insert(commodity** root,char name[],char ID[],int price) {
             */
         }else{
             //printf("!find\n");
-            if(strcmpi((*root)->name,name)<0){
+            if(str_icmp((*root)->name,name)<0){
                 //printf("goright\n");
                 insert(&(*root)->rchild,name,ID,price);
             }else{
@@ -138,7 +167,7 @@ void search(commodity *tree,char name[]) {
     //printf("search\n");
     int flag = 0;
     while(tree){
-        if(strcmp(tree->name,name) == 0){
+        if(str_icmp(tree->name,name) == 0){
             flag = 1 ;
             fprintf(fsearch,"%s\n",tree->name);
             for(int i = 0 ; i < tree->owner_num ; i++){
@@ -146,7 +175,7 @@ void search(commodity *tree,char name[]) {
             }
             fprintf(fsearch,"----------------------------\n");
         }
-        if(strcmp(tree->name,name) < 0){
+        if(str_icmp(tree->name,name) < 0){
             tree = tree->rchild;
         }else{
             tree = tree->lchild;
@@ -165,26 +194,31 @@ void buy(commodity **tree,char name[]) {
         buywa++;
         fprintf(fbuy,"%s doesn't exist!\n",name);
     }else{
-        if(strcmpi((*tree)->name,name) == 0){
+        if(str_icmp((*tree)->name,name) == 0){
             fprintf(fbuy,"%s %s %d\n",(*tree)->name,(*tree)->owner[0].ID,(*tree)->owner[0].price);
             if((*tree)->owner_num <= 1){
                 node--;
                 (*tree)->owner_num = 0;
-                if((*tree)->lchild == NULL && (*tree)->rchild == NULL){ //no child
-                    (*tree) = NULL;
-                }else if((*tree)->lchild == NULL){ //have right child
-                    (*tree) = (*tree)->rchild;
-                }else if((*tree)->rchild == NULL){ //have left child
-                    (*tree) = (*tree)->lchild;
+                if((*tree)->lchild == NULL || (*tree)->rchild == NULL){ //no child or one child
+                    // 用唯一的子節點（或 NULL）取代自己，再釋放被移除的節點
+                    commodity *old = (*tree);
+                    (*tree) = (old->lchild != NULL) ? old->lchild : old->rchild;
+                    free(old->owner);
+                    free(old);
                 }else{                             //have many childs
+                    // 找左子樹中最大的節點（前驅）：temp 要沿著指標往下走，
+                    // 原本寫成 (*temp) = (*temp)->rchild 會改掉樹上的指標、弄丟節點
                     commodity** temp = &(*tree)->lchild;
                     while((*temp)->rchild){
-                        (*temp) = (*temp)->rchild;
+                        temp = &(*temp)->rchild;
                     }
-                    strcpy((*tree)->name,(*temp)->name);
-                    (*tree)->owner_num = (*temp)->owner_num;
-                    (*tree)->owner = (*temp)->owner;
-                    (*temp) = NULL;
+                    commodity *pred = (*temp);
+                    free((*tree)->owner);          // 被買走的商品的賣家陣列不再需要
+                    strcpy((*tree)->name,pred->name);
+                    (*tree)->owner_num = pred->owner_num;
+                    (*tree)->owner = pred->owner;  // 賣家陣列直接移交，不用複製
+                    (*temp) = pred->lchild;        // 前驅可能還有左子樹，要接回去
+                    free(pred);
                 }
             }else{
             //printf("find\n");
@@ -203,7 +237,7 @@ void buy(commodity **tree,char name[]) {
            }
         }else{
             //printf("!find\n");
-            if(strcmpi((*tree)->name,name)<0){
+            if(str_icmp((*tree)->name,name)<0){
                 //printf("goright\n");
                 buy(&(*tree)->rchild,name);
             }else{

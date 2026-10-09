@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-10-09 — sell.c：跨平台、釋放記憶體、修正刪除節點錯誤
+
+- **內容**：
+  - 以自己實作的 `str_icmp()` 取代 Windows 專用的 `strcmpi`，Linux 也能編譯；`search()` 原本用區分大小寫的 `strcmp`，與 BST 建樹用的順序不一致，一併改成 `str_icmp`。
+  - 商品賣完被刪除時 `free` 節點與賣家陣列；程式結束前以 `free_tree()` 後序釋放整棵樹並 `fclose` 所有檔案。
+  - 修正刪除「有兩個子節點」的商品時的錯誤：原本找前驅節點的迴圈寫成 `(*temp) = (*temp)->rchild`，會改掉樹上的指標、讓中間的節點遺失，且前驅的左子樹被直接設成 NULL；改成移動指標 `temp = &(*temp)->rchild` 並把前驅的左子樹接回。
+  - 輸入檔名緩衝區由 10 格放大到 256 並限制 `scanf` 長度，避免溢位。
+  - 新增 GitHub Actions：在 Linux 編譯 4 個作業並執行，`sell` 以 Valgrind 檢查記憶體洩漏，另加入刪除節點的回歸測試 `tests/sell_delete_two_children.txt`。
+- **原因**：原程式在 Linux 編不過、沒有任何 `free`，而且刪除邏輯有會遺失資料的錯誤。
+- **測試**：Windows gcc 編譯後以 `input.txt` 執行，5 個輸出檔與修改前完全相同；自製測資（插入 M D X F G 後買走 M）修改前排序只剩 `G X`，修改後為 `D F G X`；Linux 編譯與 Valgrind 結果由 CI 驗證（見下一筆）。
+
 ## 2026-10-09 — 修正編譯錯誤與 README 說明
 
 - **內容**：`dino.c` 的 `void` 函式中 `return 0` 改為 `return`、`sleep(1)` 改為 Windows API `Sleep(1000)`；`collatz.c` 的 `printf(stderr, ...)` 改為 `fprintf(stderr, ...)`；README 更正 `tree.c` 的說明（序列寫在程式中，並非讀取 Input.txt）。

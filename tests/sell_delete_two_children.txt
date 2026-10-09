@@ -1,0 +1,8 @@
+insert M a 1
+insert D b 1
+insert X c 1
+insert F d 1
+insert G e 1
+buy M
+sort
+report

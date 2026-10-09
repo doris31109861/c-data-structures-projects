@@ -1,0 +1,43 @@
+# 在 Linux 上編譯並執行各作業，確認跨平台可編譯；sell 用 Valgrind 檢查記憶體洩漏
+name: build-linux
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install valgrind
+        run: sudo apt-get update && sudo apt-get install -y valgrind
+
+      - name: Build（terminal-dino-game 依賴 windows.h，不在 Linux 編譯）
+        run: |
+          gcc -Wall -g marketplace-bst/sell.c -o sell
+          gcc -Wall bank-teller-simulation/bank.c -o bank
+          gcc -Wall tree-traversal/tree.c -o tree
+          gcc -Wall os-fork-collatz/collatz.c -o collatz
+
+      - name: tree-traversal（預期輸出 CBEHGIFDA）
+        run: test "$(./tree)" = "CBEHGIFDA"
+
+      - name: os-fork-collatz
+        run: echo 6 | ./collatz
+
+      - name: bank-teller-simulation
+        working-directory: bank-teller-simulation
+        run: echo input1.tst | ../bank | tail -n 5
+
+      - name: marketplace-bst + Valgrind
+        working-directory: marketplace-bst
+        run: |
+          echo input.txt | valgrind --leak-check=full --error-exitcode=1 ../sell > /dev/null
+          cat BuyTable.txt
+
+      - name: marketplace-bst：刪除有兩個子節點的商品（回歸測試）
+        working-directory: marketplace-bst
+        run: |
+          cp ../tests/sell_delete_two_children.txt .
+          echo sell_delete_two_children.txt | ../sell > /dev/null
+          diff <(head -n 4 SortTable.txt) <(printf 'D\nF\nG\nX\n')
