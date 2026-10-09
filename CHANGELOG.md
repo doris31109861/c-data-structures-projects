@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — 恐龍遊戲支援 Linux／macOS
+
+- **內容**：新增 `terminal-dino-game/console.h`：Windows 維持 `<windows.h>`／`<conio.h>`；Linux／macOS 以 termios 實作 `kbhit`／`getch`（不等 Enter、不回顯），`Sleep` 對應 `usleep`，清畫面改用 ANSI 跳脫碼。`dino.c` 改 include `console.h`，`system("cls")` 改為 `clear_screen()`，遊戲邏輯不變。CI 在 Linux 編譯並執行 3 秒確認進入遊戲迴圈。
+- **原因**：原本只能在 Windows 執行。
+- **測試**：Windows gcc 編譯通過；Linux 編譯與執行由 CI 驗證。實際鍵盤遊玩未在 Linux 測試。
+
 ## 2026-10-09 — sell.c：跨平台、釋放記憶體、修正刪除節點錯誤
 
 - **內容**：
@@ -9,7 +15,7 @@
   - 輸入檔名緩衝區由 10 格放大到 256 並限制 `scanf` 長度，避免溢位。
   - 新增 GitHub Actions：在 Linux 編譯 4 個作業並執行，`sell` 以 Valgrind 檢查記憶體洩漏，另加入刪除節點的回歸測試 `tests/sell_delete_two_children.txt`。
 - **原因**：原程式在 Linux 編不過、沒有任何 `free`，而且刪除邏輯有會遺失資料的錯誤。
-- **測試**：Windows gcc 編譯後以 `input.txt` 執行，5 個輸出檔與修改前完全相同；自製測資（插入 M D X F G 後買走 M）修改前排序只剩 `G X`，修改後為 `D F G X`；Linux 編譯與 Valgrind 結果由 CI 驗證（見下一筆）。
+- **測試**：Windows gcc 編譯後以 `input.txt` 執行，5 個輸出檔與修改前完全相同；自製測資（插入 M D X F G 後買走 M）修改前排序只剩 `G X`，修改後為 `D F G X`；Linux 上 CI 編譯執行通過，Valgrind：All heap blocks were freed — no leaks are possible、0 errors。
 
 ## 2026-10-09 — 修正編譯錯誤與 README 說明
 

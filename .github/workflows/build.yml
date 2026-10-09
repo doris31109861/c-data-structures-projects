@@ -12,12 +12,19 @@ jobs:
       - name: Install valgrind
         run: sudo apt-get update && sudo apt-get install -y valgrind
 
-      - name: Build（terminal-dino-game 依賴 windows.h，不在 Linux 編譯）
+      - name: Build
         run: |
+          gcc -Wall terminal-dino-game/dino.c -o dino
           gcc -Wall -g marketplace-bst/sell.c -o sell
           gcc -Wall bank-teller-simulation/bank.c -o bank
           gcc -Wall tree-traversal/tree.c -o tree
           gcc -Wall os-fork-collatz/collatz.c -o collatz
+
+      # 遊戲會一直執行到被中止：跑 3 秒，timeout 結束（回傳 124）代表有正常進入遊戲迴圈
+      - name: terminal-dino-game smoke run
+        run: |
+          timeout 3 ./dino < /dev/null > /dev/null; code=$?
+          echo "exit=$code"; test $code -eq 124
 
       - name: tree-traversal（預期輸出 CBEHGIFDA）
         run: test "$(./tree)" = "CBEHGIFDA"

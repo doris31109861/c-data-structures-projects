@@ -11,8 +11,7 @@
 //function 5 : score up speed up
 //function 6 : skill_wormhole
 #include<stdio.h>
-#include<windows.h>
-#include<conio.h>
+#include "console.h"  // Sleep / 清畫面 / kbhit / getch 的跨平台版本（原本是 windows.h、conio.h）
 #include<time.h>
 #define CANVAS 50
 
@@ -104,7 +103,7 @@ void initgame(){
 		printf("\t/__.-'|_|--|_|    |_/ | | ||_|\n");
     	printf("\n\n\tpress any botton to start the dino\n");
     	Sleep(diff); // restart
-    	system("cls"); // clear screen
+    	clear_screen(); // clear screen
 	}
 }
 void startgame(){
@@ -159,7 +158,7 @@ void startgame(){
 		shiftleft(floor2,CANVAS);
 		shiftleft(floor3,CANVAS);
 		Sleep(diff); // restart
-		system("cls"); // clear screen
+		clear_screen(); // clear screen
 		if(score%10 == 0){
 			insertBarrier(floor1,10);
 		}
@@ -177,7 +176,7 @@ void startgame(){
 	return ; // 此函式回傳 void，不能 return 0
 }
 void gameover(){
-	system("cls"); // clear screen
+	clear_screen(); // clear screen
 	printf("\n\n\n");
 	printf("\t  #####    ####    ### ###  #####     ####    ##  ##   #####    #####\n");
 	printf("\t ##       ##  ##   #######  ##       ##  ##   ##  ##   ##       ##  ##\n");	
@@ -187,7 +186,7 @@ void gameover(){
 	printf("\n\t\tYour last score is: %d\t\tYour highest score is: %d\n\n",score,highscore);
 	printf("\t\t\t\t\t\t\t   Press 'R' to restart");
 	while(getch()!= 'r'){	}
-	system("cls"); // clear screen
-	Sleep(1000); // Windows API：毫秒為單位（原本的 sleep 不在 windows.h 中）
+	clear_screen(); // clear screen
+	Sleep(1000); // 毫秒為單位（Windows API；Linux 由 console.h 對應到 usleep）
 }
 

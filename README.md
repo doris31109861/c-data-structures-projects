@@ -27,9 +27,9 @@ cd tree-traversal && gcc tree.c -o tree && ./tree           # 範例序列寫在
 cd os-fork-collatz && gcc collatz.c -o collatz && ./collatz # Linux
 ```
 
-> `terminal-dino-game` 使用 `<windows.h>`／`<conio.h>`，只能在 Windows 執行。
+> `terminal-dino-game` 透過 `console.h` 相容層，在 Windows 使用原本的 `<windows.h>`／`<conio.h>`，在 Linux／macOS 改用 termios 與 ANSI 跳脫碼，兩邊都能玩：`gcc dino.c -o dino && ./dino`。
 
-其餘作業可在 Linux / Windows 編譯；每次 push 會由 GitHub Actions 在 Linux 上編譯執行，`sell` 另以 Valgrind 檢查記憶體洩漏（`.github/workflows/build.yml`）。
+所有作業都可在 Linux / Windows 編譯；每次 push 會由 GitHub Actions 在 Linux 上編譯執行，`sell` 另以 Valgrind 檢查記憶體洩漏（`.github/workflows/build.yml`）。
 
 ### 學到的東西
 
@@ -48,7 +48,7 @@ A collection of C programs that put core data structures and OS concepts into pr
 | `marketplace-bst/` | BST, heap sort, file I/O | A marketplace where each product is a BST node holding its sellers; supports insert, search, buy (lowest price via heap), delete and sorted reports |
 | `bank-teller-simulation/` | Linked-list queues, simulation | Customers join the shortest of several teller queues; outputs each customer's window and departure time |
 | `tree-traversal/` | Binary tree, recursion | Rebuilds a tree from PreOrder + InOrder and prints PostOrder |
-| `terminal-dino-game/` | Game loop, arrays | Console Dino game with 3 floors, obstacles, speed-up, high score and a "wormhole" skill (Windows only) |
+| `terminal-dino-game/` | Game loop, arrays | Console Dino game with 3 floors, obstacles, speed-up, high score and a "wormhole" skill (Windows, Linux and macOS via `console.h`) |
 | `os-fork-collatz/` | `fork()`, `wait()` | A child process prints the Collatz sequence while the parent waits |
 
 ### What I learned
