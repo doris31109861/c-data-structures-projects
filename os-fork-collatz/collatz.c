@@ -1,3 +1,9 @@
+/*
+ * collatz.c — 作業系統：用 fork() 建立子行程計算 Collatz 數列
+ *
+ * 子行程（fork 回傳 0）從輸入的正整數 n 開始，偶數除以 2、奇數乘 3 加 1，印到 1 為止；
+ * 父行程呼叫 wait() 等子行程結束，避免子行程變成殭屍行程。只能在 Linux / macOS 編譯。
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

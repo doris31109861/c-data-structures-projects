@@ -1,3 +1,10 @@
+/*
+ * sell.c — 拍賣平台（資料結構：二元搜尋樹 + Heap Sort + 檔案 I/O）
+ *
+ * 每項商品是 BST 的一個節點，節點內記錄所有賣家與價格；
+ * 依 input.txt 的指令進行新增、查詢、購買（以 Heap 找出最低價賣家）、刪除與排序，
+ * 結果輸出成 Buy／Search／Sort／Log 報表。
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

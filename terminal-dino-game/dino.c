@@ -1,3 +1,9 @@
+/*
+ * dino.c — 終端機版 Chrome 小恐龍遊戲（Windows：使用 <windows.h> 與 <conio.h>）
+ *
+ * 遊戲迴圈每格更新畫面陣列：3 層樓可上下跳、障礙物出現在第二或第三層、
+ * 分數越高速度越快、記錄最高分，並有「蟲洞」技能可瞬間穿越。
+ */
 //function 1 : 3 floor
 //function 2 : initgame startgame gameover
 //function 3 : store the hightest score

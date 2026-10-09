@@ -1,3 +1,10 @@
+/*
+ * tree.c — 由 PreOrder 與 InOrder 重建二元樹，並輸出 PostOrder
+ *
+ * 作法：PreOrder 的第一個字元一定是根；在 InOrder 中找到根的位置，
+ * 左邊是左子樹、右邊是右子樹，遞迴建樹（findtree），最後以後序走訪（travel）印出。
+ * 範例：Pre = ABCDEFGHI、In = BCAEDGHFI → Post = CBEHGIFDA
+ */
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>

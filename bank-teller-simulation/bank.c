@@ -1,3 +1,10 @@
+/*
+ * bank.c — 銀行多櫃台排隊模擬（資料結構：linked-list 佇列）
+ *
+ * 從 input1.tst / input2.tst 讀入每位客人的抵達時間與辦理時間，
+ * 每位客人選擇目前最短的櫃台排隊；以事件模擬推進時間，
+ * 輸出每位客人被分配到的櫃台與離開時間。
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
