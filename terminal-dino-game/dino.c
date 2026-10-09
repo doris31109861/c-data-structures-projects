@@ -174,7 +174,7 @@ void startgame(){
 		}
 	}
 	gameover();
-	return 0 ;
+	return ; // 此函式回傳 void，不能 return 0
 }
 void gameover(){
 	system("cls"); // clear screen
@@ -188,6 +188,6 @@ void gameover(){
 	printf("\t\t\t\t\t\t\t   Press 'R' to restart");
 	while(getch()!= 'r'){	}
 	system("cls"); // clear screen
-	sleep(1);
+	Sleep(1000); // Windows API：毫秒為單位（原本的 sleep 不在 windows.h 中）
 }
 

@@ -24,7 +24,7 @@ int main() {
 	error -> -1
     */
     if (pid < 0) { //-1 -> error
-        printf(stderr, "Fork 錯誤\n");
+        fprintf(stderr, "Fork 錯誤\n"); // 錯誤訊息寫到 stderr 要用 fprintf
         return 1;
     } else if (pid == 0) { //0 -> in child
         printf("%d ", num );

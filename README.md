@@ -23,7 +23,7 @@
 ```bash
 cd marketplace-bst && gcc sell.c -o sell && ./sell          # 輸入 input.txt
 cd bank-teller-simulation && gcc bank.c -o bank && ./bank   # 輸入 input1.tst 或 input2.tst
-cd tree-traversal && gcc tree.c -o tree && ./tree           # 讀取 Input.txt
+cd tree-traversal && gcc tree.c -o tree && ./tree           # 範例序列寫在程式中（Input.txt 為題目提供的另一組輸入）
 cd os-fork-collatz && gcc collatz.c -o collatz && ./collatz # Linux
 ```
 
