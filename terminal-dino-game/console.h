@@ -20,6 +20,7 @@ static inline void clear_screen(void) { system("cls"); }
 #else /* Linux / macOS */
 
 #include <stdio.h>
+#include <stdlib.h>   /* rand、system（Windows 版由 windows.h 間接引入） */
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
