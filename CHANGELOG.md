@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-09 — 修正恐龍 ASCII 圖案的跳脫字元、CI 測試步驟
+
+- **內容**：`dino.c` 恐龍圖案中的 `"\)"` 改為 `"\\)"`（原本是無效的跳脫字元，反斜線印不出來，gcc 會警告）；`console.h` 的 Linux 分支補上 `<stdlib.h>`（`rand` 原本由 `windows.h` 間接引入）；CI 的 smoke run 改成 `|| code=$?`，因為 GitHub Actions 的 bash 有 `-e`，逾時的 124 會直接讓步驟失敗。
+- **說明**：前一個 commit（01085fe）的訊息已提到圖案修正，但當時修改腳本中途出錯，實際只包含 CI 與 `<stdlib.h>` 的修改；圖案修正在這個 commit。
+- **測試**：Windows gcc `-Wall` 編譯無警告；CI 在 Linux 全部步驟通過（含恐龍 3 秒 smoke run）。
+
 ## 2026-10-09 — 恐龍遊戲支援 Linux／macOS
 
 - **內容**：新增 `terminal-dino-game/console.h`：Windows 維持 `<windows.h>`／`<conio.h>`；Linux／macOS 以 termios 實作 `kbhit`／`getch`（不等 Enter、不回顯），`Sleep` 對應 `usleep`，清畫面改用 ANSI 跳脫碼。`dino.c` 改 include `console.h`，`system("cls")` 改為 `clear_screen()`，遊戲邏輯不變。CI 在 Linux 編譯並執行 3 秒確認進入遊戲迴圈。

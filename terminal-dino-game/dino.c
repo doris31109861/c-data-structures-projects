@@ -96,7 +96,7 @@ void initgame(){
     while( kbhit() != 1 ){
     	printf("\n\n");
     	printf("\t               __\n");
-		printf("\t              / _\)\n");
+		printf("\t              / _\\)\n"); // 原本寫 \) 是無效的跳脫字元，反斜線不會印出來
 		printf("\t     _.----._/ /\n");
 		printf("\t    /         /    _\n");
 		printf("\t __/ (  | (  |    | \\ .  _  _\n");
